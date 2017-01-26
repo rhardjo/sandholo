@@ -10,12 +10,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need:
 
-An Arduino with firmata installed * [Firmata code](https://github.com/firmata/arduino#usage) - Firmata instructions
-Node.js * [NodeJS](www.nodejs.org) - Download here
-A Sand Holo installation
-A few pc fans
-Breadboard, wires and around 4 MOSFETS
-The video (file size too big for github) * [Video Link](https://www.mediafire.com/?vap4f13uzf2hqgx) - Mediafire link with video
+* An Arduino with firmata installed * [Firmata code](https://github.com/firmata/arduino#usage) - Firmata instructions
+* Node.js * [NodeJS](www.nodejs.org) - Download here
+* A Sand Holo installation
+* A few pc fans
+* Breadboard, wires and around 4 MOSFETS
+* The video (file size too big for github) * [Video Link](https://www.mediafire.com/?vap4f13uzf2hqgx) - Mediafire link with video
 
 ### Installing
 
