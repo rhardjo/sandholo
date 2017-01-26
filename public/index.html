@@ -279,6 +279,7 @@
 		<script>
 			/********** VARIABLES **********/
 			// Global variables
+			var timesLooped = 0;
 			var jsonData;
 			var titleYear1 = document.getElementById('currentYear1');
 			var titleYear2 = document.getElementById('currentYear2');
@@ -315,7 +316,7 @@
 			var heightTransition = 5;
 			var depthTransition = 0.5;
 			var timer = 0;
-			var index = 0;
+			var index = 0
 
 			var	initAnim = true;
 			var runAnim = false;
@@ -741,24 +742,33 @@
 					index ++;
 					timer = 0;
 
-					console.log("Index = " + index);
-					console.log("Count = " + count)
+					// console.log("Index = " + index);
+					// console.log("Count = " + count)
 
 					// When it finishes all years
 					if (index == 16) {
-						// reset
-						initAnim = true;
-						runAnim = false;
-						count = 0;
-						index = 0;
-						isPlay = false;
-						render();
+						if (timesLooped < 3) {
+							// reset
+							initAnim = true;
+							runAnim = false;
+							count = 0;
+							index = 0;
+							isPlay = false;
+							render();
 
-						TweenMax.to(".hud", 0.5, {opacity:"0", ease:Linear.easeOut});
-						// TweenMax.to(".blackness", 0.5, {opacity:"100", ease:Linear.easeOut});
-						TweenMax.to(".video", 0.5, {opacity:"100", ease:Linear.easeOut,});
-						playVideo();
-						windSound.pause();
+							TweenMax.to(".hud", 0.5, {opacity:"0", ease:Linear.easeOut});
+							// TweenMax.to(".blackness", 0.5, {opacity:"100", ease:Linear.easeOut});
+							TweenMax.to(".video", 0.5, {opacity:"100", ease:Linear.easeOut,});
+							playVideo();
+							windSound.pause();
+
+							// Count the times it has looped
+							timesLooped++;
+						} else {
+							// refresh the browser
+							location.reload();
+							timesLooped = 0;
+						}
 					}
 
 				}

@@ -10,21 +10,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need:
 
-* An Arduino with firmata installed * [Firmata code](https://github.com/firmata/arduino#usage) - Firmata instructions
-* Node.js * [NodeJS](www.nodejs.org) - Download here
+* An Arduino with [Firmata](https://github.com/firmata/arduino#usage) installed
+* [NodeJS](www.nodejs.org) - Download here
 * A Sand Holo installation
 * A few pc fans
 * Breadboard, wires and around 4 MOSFETS
-* The video (file size too big for github) * [Video Link](https://www.mediafire.com/?vap4f13uzf2hqgx) - Mediafire link with video
+* [The video for transition](http://www7.zippyshare.com/v/9VHU3GLY/file.html) - File too big for github
 
 ### Installing
-
-Create a nice folder where we can store our files.
-
-```
-mkdir SandHolo
-cd SandHolo
-```
 
 Lets download our files.
 
@@ -32,11 +25,19 @@ Lets download our files.
 $ git clone https://github.com/rhardjo/sandholo
 ```
 
+Move into the directory.
+
+```
+cd sandholo
+```
+
 Install all dependencies.
 
 ```
 npm install
 ```
+
+Make sure you download the video and place it in the public folder
 
 Thats it!
 
