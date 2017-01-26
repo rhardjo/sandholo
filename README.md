@@ -10,13 +10,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 You will need:
 
-```
 An Arduino with firmata installed * [Firmata code](https://github.com/firmata/arduino#usage) - Firmata instructions
 Node.js * [NodeJS](www.nodejs.org) - Download here
 A Sand Holo installation
 A few pc fans
 Breadboard, wires and around 4 MOSFETS
-```
+The video (file size too big for github) * [Video Link](https://www.mediafire.com/?vap4f13uzf2hqgx) - Mediafire link with video
 
 ### Installing
 
@@ -30,7 +29,7 @@ cd SandHolo
 Lets download our files.
 
 ```
-$git clone https://github.com/rhardjo/sandholo
+$ git clone https://github.com/rhardjo/sandholo
 ```
 
 Install all dependencies.
@@ -62,7 +61,7 @@ It should run in your browser now.
 * [Express](http://expressjs.com/en/4x/api.html) - Makes it a bit easier
 * [Socket.io](http://socket.io/docs/) - For communication between browser and Arduino
 * [Johnny-Five](http://johnny-five.io/api/) - To control the Arduino with javascript
-* Lots of love *
+* Lots of love
 
 ## Authors
 
