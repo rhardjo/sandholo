@@ -25,7 +25,7 @@ Lets download our files.
 $ git clone https://github.com/rhardjo/sandholo
 ```
 
-Move into the directory.
+Move into the directory
 
 ```
 cd sandholo
@@ -37,7 +37,7 @@ Install all dependencies.
 npm install
 ```
 
-Make sure you download the video and place it in the public folder
+Make sure you download the video and place it in the public folder.
 
 Thats it!
 
