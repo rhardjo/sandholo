@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<script src="js/gsap/TweenMax.min.js"></script>
+	<script src="js/three.min.js"></script>
+	<script src="js/p5.min.js"></script>
+	<script src="js/p5.dom.min.js"></script>
+	<script src="js/Projector.js"></script>
+	<script src="js/CanvasRenderer.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/socket.io-1.4.5.js"></script>
+
+	<!--CDN link for  TweenMax-->
+	<script src="js/jquery-3.1.1.min.js"></script>
+
+	<style type="text/css">
+		#startButtonId, #resetButtonId {
+			color: white;
+		}
+
+		@font-face {
+		    font-family: Bungee-Regular;
+		    src: url("Bungee-Regular.ttf");
+		}
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+			background-color: #000000;
+			font-family: Bungee-Regular, Helvetica, sans-serif;
+        }
+
+		h1,h2,h3,h4 {
+			/*position: absolute;*/
+			text-align: center;
+            color: white;
+		}
+
+        h1 {
+			font-size: 40px;
+        }
+
+        h3 {
+        	font-size: 20px;
+        	display: inline;
+        }
+
+		#container {
+			margin-top: -19px;
+			/*z-index: 1;*/
+		}
+
+		.hud {
+			position: absolute;
+			text-align: center;
+            color: white;
+			opacity: 0;
+		}
+
+		.top {
+			top: 22px;
+			left: 50%;
+   			transform: translateX(-50%);
+		}
+
+		.blackness {
+			width: 100vw;
+			height: 100vh;
+			z-index: 2;
+			background-color: red;
+		}
+
+		.top-text {
+			position: relative;
+			-ms-transform: rotate(180deg) scale(-1, 1); /* IE 9 */
+		    -webkit-transform: rotate(180deg) scale(-1, 1); /* Chrome, Safari, Opera */
+		    transform: rotate(180deg) scale(-1, 1);
+		}
+
+		.right {
+			top: 48vh;
+			right: 12vw;
+			display: flex;
+		}
+
+		.right-text {
+			position: relative;
+			-ms-transform: rotate(270deg) scale(-1, 1); /* IE 9 */
+		    -webkit-transform: rotate(270deg) scale(-1, 1); /* Chrome, Safari, Opera */
+		    transform: rotate(270deg) scale(-1, 1);
+		}
+
+		.right-text.subtitle {
+			margin: -50px;
+		}
+
+		.bottom {
+			bottom: 22px;
+			left: 50%;
+   			transform: translateX(-50%);
+		}
+
+		.bottom-text {
+			position: relative;
+			-moz-transform: scale(-1, 1);
+			-webkit-transform: scale(-1, 1);
+			transform: scale(-1, 1);
+		}
+
+		.left {
+			top: 48vh;
+			left: 12vw;
+			display: flex;
+		}
+
+		.left-text {
+			position: relative;
+			-ms-transform: rotate(90deg) scale(-1, 1); /* IE 9 */
+			-webkit-transform: rotate(90deg) scale(-1, 1); /* Chrome, Safari, Opera */
+			transform: rotate(90deg) scale(-1, 1);
+		}
+
+		.left-text.subtitle {
+			margin: -50px;
+		}
+
+		.subtitle h3:after {
+			content: "|";
+			margin: 0 10px;
+		}
+
+		.subtitle h3:last-child:after {
+			content: "";
+		}
+
+		.subtitle h3.duneheight:before {
+			content: url('/img/duneheight.png');
+		}
+
+		.subtitle h3.windspeed:before {
+			content: url('/img/windspeed.png');
+		}
+
+		.subtitle h3.winddirection:before {
+			content: url('/img/winddirection.png');
+		}
+
+		.subtitle h3:before {
+			position: relative;
+			top: 7px;
+    		margin: 10px;
+		}
+
+		.video-container {
+			display: flex;
+			z-index: 3;
+		}
+
+		.video {
+			position: absolute;
+			width: 50vw;
+			overflow: hidden;
+		}
+
+		#video1 {
+			width: 20vw;
+			height: 20vw;
+			top: 0.5vh;
+			left: 39.5vw;
+			transform: rotate(180deg);
+			/*border: solid 10px #000;*/
+		}
+
+		#video2 {
+			width: 20vw;
+			height: 20vw;
+			top: 32vh;
+			right: 20vw;
+			transform: rotate(-90deg);
+			/*border: solid 10px #09b;*/
+		}
+
+		#video3 {
+			width: 20vw;
+			height: 20vw;
+			bottom: 0.5vh;
+			left: 50%;
+			transform: translatex(-50%);
+			/*border: solid 10px #306;*/
+		}
+
+		#video4 {
+			width: 20vw;
+			height: 20vw;
+			top: 32vh;
+			left: 20vw;
+			transform: rotate(90deg);
+			/*border: solid 10px #0b2;*/
+		}
+
+		.audio-container {
+			display: none;
+		}
+
+    </style>
+	</head>
+	<body onload="playVideo()">
+		<!-- <div id="startButtonId">Start</div>
+		<div id="resetButtonId">Reset</div> -->
+		<div class="hud top">
+			<div class="top-text subtitle">
+				<h3 class="duneheight">0</h3>
+				<h3 class="windspeed">0</h3>
+				<h3 class="winddirection">0</h3>
+			</div>
+			<h1 class="top-text" id="currentYear1">2000</h1>
+		</div>
+
+		<div class="hud right">
+			<h1 class="right-text" id="currentYear2">2000</h1>
+			<div class="right-text subtitle">
+				<h3 class="duneheight">0</h3>
+				<h3 class="windspeed">0</h3>
+				<h3 class="winddirection">0</h3>
+			</div>
+		</div>
+
+		<div class="hud left">
+			<div class="left-text subtitle">
+				<h3 class="duneheight">0</h3>
+				<h3 class="windspeed">0</h3>
+				<h3 class="winddirection">0</h3>
+			</div>
+			<h1 class="left-text" id="currentYear3">2000</h1>
+		</div>
+
+		<div class="hud bottom">
+			<h1 class="bottom-text" id="currentYear4">2000</h1>
+			<div class="bottom-text subtitle">
+				<h3 class="duneheight">0</h3>
+				<h3 class="windspeed">0</h3>
+				<h3 class="winddirection">0</h3>
+			</div>
+		</div>
+
+		<!-- <div class="blackness"></div> -->
+
+		<div id="container"></div>
+
+		<div class="video-container">
+			<div class="clipper1">
+				<video class="video" id="video1">
+					<source src="./EarthZoom.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+			</div>
+			<div class="clipper1">
+				<video class="video" id="video2" muted>
+					<source src="./EarthZoom.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+			</div> -->
+			<div class="clipper1">
+				<video class="video" id="video3" muted>
+					<source src="./EarthZoom.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+			</div>
+			<div class="clipper1">
+				<video class="video" id="video4" muted>
+					<source src="./EarthZoom.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+			</div>
+		</div>
+
+		<div class="audio-container">
+			<audio id="wind-audio">
+				<source src="./WindSound.mp3" type="audio/mpeg">
+			</audio>
+		</div>
+
+		<script>
+			/********** VARIABLES **********/
+			// Global variables
+			var jsonData;
+			var titleYear1 = document.getElementById('currentYear1');
+			var titleYear2 = document.getElementById('currentYear2');
+			var titleYear3 = document.getElementById('currentYear3');
+			var titleYear4 = document.getElementById('currentYear4');
+			var myYear;
+			var windSpeed, windDirection;
+			var myLoop;
+			var ourVideo = true;
+			var firstInit = 0;
+
+			// Socketio
+			var socket = io.connect('http://localhost:8888');
+
+			// WebGL vars
+			var SEPARATION = 50, AMOUNTX = 30, AMOUNTY = 30;
+			var container, stats;
+			var camera, scene, renderer;
+			var particles, particle, count = 0;
+
+			// Screen vars
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			// Sinus transition vars
+			var deltaDifference;
+			var sinusHeight, sinusDepth;
+			var newSinusHeight = 0;
+			var sinusDataCounter = 0;
+
+			// Animation / loop vars
+			var progress = 1;
+			var currentSet = 0;
+			var heightTransition = 5;
+			var depthTransition = 0.5;
+			var timer = 0;
+			var index = 0;
+
+			var	initAnim = true;
+			var runAnim = false;
+			var isPlay = false;
+
+			// Video
+			var video1 = document.getElementById("video1");
+			var video2 = document.getElementById("video2");
+			var video3 = document.getElementById("video3");
+			var video4 = document.getElementById("video4");
+
+			// Audio
+			var windSound = document.getElementById("wind-audio");
+
+			// Views
+			var fov = 60;
+			var rgbColor = 0;
+			var views;
+			var windowWidth = window.innerWidth;
+			var windowHeight = window.innerHeight;
+			var views = [
+				{
+					left: 0.2,
+					bottom: 0.3,
+					width: 0.2,
+					height: 0.37,
+					background: new THREE.Color().setRGB( rgbColor, rgbColor, rgbColor ),
+					eye: [ 2000, 0, 0 ],
+					up: [ 1, 0, 0 ],
+					fov: fov,
+					updateCamera: function ( camera, scene ) {
+						camera.lookAt( scene.position );
+					}
+				},
+				{
+					left: 0.375,
+					bottom: 0.63,
+					width: 0.25,
+					height: 0.37,
+					background: new THREE.Color().setRGB( rgbColor, rgbColor, rgbColor ),
+					eye: [ 0, 0, 2000 ],
+					up: [ 0, 1, 0 ],
+					fov: fov,
+					updateCamera: function ( camera, scene ) {
+					    camera.lookAt( scene.position );
+					}
+				},
+				{
+					left: 0.6,
+					bottom: 0.3,
+					width: 0.2,
+					height: 0.37,
+					background: new THREE.Color().setRGB( rgbColor, rgbColor, rgbColor ),
+					eye: [ -2000, 0, 0 ],
+					up: [ -1, 0, 0 ],
+					fov: fov,
+					updateCamera: function ( camera, scene) {
+						camera.lookAt( scene.position );
+					}
+				},
+				{
+					left: 0.375,
+					bottom: 0,
+					width: 0.25,
+					height: 0.37,
+					background: new THREE.Color().setRGB( rgbColor, rgbColor, rgbColor ),
+					eye: [ 0, 0, -2000 ], //x y z
+					up: [ 0, -1, 0 ], // x y z
+					fov: fov,
+					updateCamera: function ( camera, scene) {
+						camera.lookAt( scene.position );
+					}
+				}
+			];
+
+			/********** FUNCTIONS **********/
+			$(document).keypress(function(e) {
+				if(e.which == 13) {
+					// enter pressed
+					forcePresentation();
+				}
+			});
+
+			/********** Video functions **********/
+			// Stop and reset video
+			function stopVideo() {
+				video1.pause();
+				video1.currentTime = 0;
+				video2.pause();
+				video2.currentTime = 0;
+				video3.pause();
+				video3.currentTime = 0;
+				video4.pause();
+				video4.currentTime = 0;
+			}
+
+			function playVideo() {
+				socket.emit('windSpeed', {speed: 0, scaled:0, direction: 320});
+				windSound.currentTime = 0;
+				windSound.volume = 0.2;
+
+				video1.play();
+				video2.play();
+				video3.play();
+				video4.play();
+				$('#video4').on('ended', function(){
+					console.log("starting animation");
+
+					stopVideo();
+
+					titleYear1.innerHTML = "2000";
+					titleYear2.innerHTML = "2000";
+					titleYear3.innerHTML = "2000";
+					titleYear4.innerHTML = "2000";
+
+					TweenMax.to(".video", 0.5, {opacity:"0", ease:Linear.easeOut});
+					TweenMax.to(".hud", 0.5, {opacity:"100", ease:Linear.easeOut});
+
+					if (firstInit === 1) {
+						runAnim = false;
+						isPlay = true;
+						animate();
+						windSound.play();
+					} else {
+						setup();
+					}
+				})
+			}
+
+			/********** ThreeJS Functions **********/
+			function reset() {
+				initAnim = true;
+				runAnim = false;
+				count = 0;
+				index = 0;
+				isPlay = false;
+				render();
+			}
+
+			function forcePresentation() {
+				reset();
+				video1.currentTime = 73;
+				video2.currentTime = 73;
+				video3.currentTime = 73;
+				video4.currentTime = 73;
+				playVideo();
+			}
+
+			// On first load
+			function setup() {
+	            // Set Canvas Size
+	            createCanvas(0, 0);
+				init();
+
+				index = 0;
+			}
+
+			function init() {
+			    container = document.getElementById( 'container' );
+			    document.body.appendChild( container );
+
+			    for (var ii =  0; ii < views.length; ++ii ) {
+				    var view = views[ii];
+				    camera = new THREE.PerspectiveCamera( view.fov, window.innerWidth / window.innerHeight, 1, 10000 );
+				    camera.position.x = view.eye[ 0 ];
+				    camera.position.y = view.eye[ 1 ];
+				    camera.position.z = view.eye[ 2 ];
+				    camera.up.x = view.up[ 0 ];
+				    camera.up.y = view.up[ 1 ];
+				    camera.up.z = view.up[ 2 ];
+				    view.camera = camera;
+			    }
+
+				scene = new THREE.Scene();
+				particles = new Array();
+				var PI2 = Math.PI * 2;
+				var material = new THREE.SpriteMaterial( {
+
+				    color: 0xffffff,
+				    program: function ( context ) {
+						context.beginPath();
+						context.arc( 0, 0, 0.5, 0, PI2, true );
+						context.fill();
+				    }
+			    });
+
+				var i = 0;
+			    for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+				    for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+						particle = particles[ i ++ ] = new THREE.Sprite( material );
+						particle.position.x = ix * SEPARATION - ( ( AMOUNTX * SEPARATION ) / 2 );
+						particle.position.z = iy * SEPARATION - ( ( AMOUNTY * SEPARATION ) / 2 );
+						scene.add( particle );
+				    }
+			    }
+
+				renderer = new THREE.WebGLRenderer( {antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+
+			    // Load JSON DUNE data
+			    var loader = new THREE.XHRLoader();
+
+			    loader.load( 'data/data.json', function ( text ) {
+					jsonData = JSON.parse( text );
+
+					sinusHeight = jsonData.locatie8[0].max;
+					sinusDepth = jsonData.locatie8[0].min;
+					windSpeed = jsonData.locatie8[0].speed;
+					windDirection = jsonData.locatie8[0].direction;
+			    });
+
+				index = 0;
+				timer = 0;
+				count = 0;
+				newSinusHeight = 0;
+				sinusDataCounter = 0;
+
+				firstInit = 1;
+
+				// Start animation
+				initAnim = false;
+				runAnim = true;
+				count = 0;
+				// Start audio
+				windSound.play();
+		    }
+
+			// var startButton = document.getElementById( 'startButtonId' );
+			//  var resetButton = document.getElementById( 'resetButtonId' );
+
+			// Start Button
+			function StartAnimation() {
+
+				if (initAnim) {
+					initAnim = false;
+					runAnim = true;
+					count = 0;
+				}
+				// Start and Pause
+				if (runAnim) { // run
+					startButton.innerHTML = 'Pause';
+					runAnim = false;
+					isPlay = true;
+					animate();
+				} else { // pause
+					startButton.innerHTML = 'Restart';
+					runAnim = true;
+					isPlay = false;
+				}
+			}
+
+			function ResetParameters() {
+
+			   // Set StartButton to Start
+			   startButton.innerHTML = 'Start';
+
+			   // Boolean for Stop Animation
+			   initAnim = true;
+			   runAnim = false;
+			   count = 0;
+			   index = 0;
+			   isPlay = false;
+			   render();
+		   }
+
+			// Update on screen resize
+			function updateSize() {
+				if ( windowWidth != window.innerWidth || windowHeight != window.innerHeight ) {
+
+					windowWidth  = window.innerWidth;
+					windowHeight = window.innerHeight;
+
+					renderer.setSize ( windowWidth, windowHeight );
+				}
+			}
+
+			// Loop function
+			function animate() {
+				// Transition between values
+				deltaDifference = newSinusHeight - sinusHeight; // Difference between new and old value
+				if(deltaDifference > 0) { // If the difference is positive, add more
+					sinusHeight += heightTransition;
+					sinusDepth += depthTransition;
+				} else if (deltaDifference < 0) { // If the difference is negative, minus value
+					sinusHeight -= heightTransition;
+					sinusDepth -= depthTransition;
+				}
+
+				// Loop function for every N seconds
+				if (timer == 420) {
+
+					myYear = jsonData.locatie8[index].jaar;
+					titleYear1.innerHTML = jsonData.locatie8[index].jaar;
+					titleYear2.innerHTML = jsonData.locatie8[index].jaar;
+					titleYear3.innerHTML = jsonData.locatie8[index].jaar;
+					titleYear4.innerHTML = jsonData.locatie8[index].jaar;
+
+					newSinusHeight = jsonData.locatie8[index].max;
+					newSinusDepth = jsonData.locatie8[index].min;
+
+					realwindSpeed = jsonData.locatie8[index].realspeed;
+					scaledwindSpeed = jsonData.locatie8[index].speed;
+					windDirection = jsonData.locatie8[index].direction;
+
+					// Emit data to server
+					switch (myYear) {
+						case 2001:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.36
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2002:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.84
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2003:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.36
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2004:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.52
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2005:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.52
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2006:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.36
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2007:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.84
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2008:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.68
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2009:
+							$(".duneheight").html("000");
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.20
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2010:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.36
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2011:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.68
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2012:
+							$(".duneheight").html("000");
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.68
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2013:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.84
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2014:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 0.36
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2015:
+							$(".duneheight").html(newSinusHeight);
+							$(".windspeed").html(realwindSpeed);
+							$(".winddirection").html(windDirection);
+							windSound.volume = 1
+							socket.emit('windSpeed', {speed: realwindSpeed, scaled:scaledwindSpeed, direction: windDirection});
+							break;
+						case 2016:
+							$(".duneheight").html("000");
+							$(".windspeed").html("000");
+							$(".winddirection").html("000");
+							socket.emit('windSpeed', {speed: 0, scaled:0, direction: 320});
+							windSound.volume = 0.2;
+							break;
+					};
+
+					index ++;
+					timer = 0;
+
+					console.log("Index = " + index);
+					console.log("Count = " + count)
+
+					// When it finishes all years
+					if (index == 16) {
+						// reset
+						initAnim = true;
+						runAnim = false;
+						count = 0;
+						index = 0;
+						isPlay = false;
+						render();
+
+						TweenMax.to(".hud", 0.5, {opacity:"0", ease:Linear.easeOut});
+						// TweenMax.to(".blackness", 0.5, {opacity:"100", ease:Linear.easeOut});
+						TweenMax.to(".video", 0.5, {opacity:"100", ease:Linear.easeOut,});
+						playVideo();
+						windSound.pause();
+					}
+
+				}
+
+				if (!isPlay) return;
+				    requestAnimationFrame(animate);
+				    timer++
+				    render();
+
+		    }
+
+			// Render to screen
+			function render() {
+
+				var i = 0;
+
+				// Object rendering
+				for ( var ix = 0; ix < AMOUNTX; ix ++ ) {
+					for ( var iy = 0; iy < AMOUNTY; iy ++ ) {
+
+							particle = particles[ i++ ];
+							particle.position.y = ( Math.sin( ( ix + count ) * 0.2 ) * sinusHeight) +
+								( Math.sin( ( iy + count ) * 0.2 ) * sinusDepth) //+ ( Math.tan( ( ix + count + 48 ) * 0.1 ) * 20);
+
+						   // particle.scale.x = particle.scale.y = ( Math.sin( ( ix + count ) * 0.3 ) + 1 ) * 4 +
+						   //     ( Math.sin( ( iy + count ) * 0.5 ) + 1 ) * 4;
+
+						    particle.scale.x = 5;
+						    particle.scale.y = 5;
+				    }
+			    }
+
+				// Camera rendering
+				for ( var ii = 0; ii < views.length; ++ii ) {
+					view = views[ii];
+					camera = view.camera;
+
+					view.updateCamera( camera, scene, mouseX, mouseY );
+
+					var left   = Math.floor( windowWidth  * view.left );
+					var bottom = Math.floor( windowHeight * view.bottom );
+					var width  = Math.floor( windowWidth  * view.width );
+					var height = Math.floor( windowHeight * view.height );
+					renderer.setViewport( left, bottom, width, height );
+					renderer.setScissor( left, bottom, width, height );
+					renderer.setScissorTest( true );
+					renderer.setClearColor( view.background );
+
+					camera.aspect = width / height;
+					camera.updateProjectionMatrix();
+					renderer.render( scene, camera );
+			    }
+
+				// Regulate speed by year
+				switch (myYear) {
+					case 2001:
+						count += 0.44;;
+						break;
+					case 2002:
+						count += 0.71;
+						break;
+					case 2003:
+						count += 0.44;
+						break;
+					case 2004:
+						count += 0.53;
+						break;
+					case 2005:
+						count += 0.53;
+						break;
+					case 2006:
+						count += 0.44;
+						break;
+					case 2007:
+						count += 0.71;
+						break;
+					case 2008:
+						count += 0.62;
+						break;
+					case 2009:
+						count += 0.35;
+						break;
+					case 2010:
+						count += 0.44;
+						break;
+					case 2011:
+						count += 0.62;
+						break;
+					case 2012:
+						count += 0.62;
+						break;
+					case 2013:
+						count += 0.71;
+						break;
+					case 2014:
+						count += 0.44;
+						break;
+					case 2015:
+						count += 0.80;
+						break;
+				};
+				// count += 0.1;
+		    }
+
+	 	</script>
+	</body>
+</html>

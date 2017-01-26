@@ -1,0 +1,20 @@
+{
+    "locatie8":[
+        {"jaar": 2001, "min": 96, "max": 200, "direction": 265, "realspeed": 120, "speed": 91},
+        {"jaar": 2002, "min": 96, "max": 280, "direction": 245, "realspeed": 150, "speed": 214},
+        {"jaar": 2003, "min": 95, "max": 265, "direction": 241, "realspeed": 120, "speed": 91},
+        {"jaar": 2004, "min": 95, "max": 135, "direction": 294, "realspeed": 130, "speed": 132},
+        {"jaar": 2005, "min": 95, "max": 165, "direction": 270, "realspeed": 130, "speed": 132},
+        {"jaar": 2006, "min": 96, "max": 195, "direction": 209, "realspeed": 120, "speed": 91},
+        {"jaar": 2007, "min": 96, "max": 190, "direction": 248, "realspeed": 150, "speed": 214},
+        {"jaar": 2008, "min": 96, "max": 200, "direction": 275, "realspeed": 140, "speed": 173},
+        {"jaar": 2009, "min": 0, "max": 0, "direction": 226, "realspeed": 110, "speed": 50},
+        {"jaar": 2010, "min": 97, "max": 185, "direction": 206, "realspeed": 120, "speed": 91},
+        {"jaar": 2011, "min": 145, "max": 195, "direction": 210, "realspeed": 140, "speed": 173},
+        {"jaar": 2012, "min": 0, "max": 0, "direction": 289, "realspeed": 140, "speed": 173},
+        {"jaar": 2013, "min": 98, "max": 190, "direction": 196, "realspeed": 150, "speed": 214},
+        {"jaar": 2014, "min": 95, "max": 200, "direction": 195, "realspeed": 120, "speed": 91},
+        {"jaar": 2015, "min": 89, "max": 180, "direction": 277, "realspeed": 160, "speed": 255},
+        {"jaar": 2016, "min": 0, "max": 0, "direction": 0, "realspeed": 0, "speed": 0}
+    ]
+}
